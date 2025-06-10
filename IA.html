@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infografía Interactiva: El Corazón del Machine Learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Brilliant Blues -->
+    <!-- Application Structure Plan: La infografía sigue una estructura narrativa que desciende desde lo conceptual a lo práctico. 1. Introducción (Gancho): Capta la atención con la idea central del aprendizaje automático. 2. Regresión Lineal: Explica el modelo predictivo fundamental con un ejemplo visual. 3. Función de Costo: Detalla cómo se mide el error del modelo. 4. Optimización: Muestra el proceso de "aprendizaje" a través del Descenso del Gradiente. 5. Aplicaciones: Conecta la teoría con casos de uso del mundo real. Esta estructura fue elegida para construir el conocimiento gradualmente, asegurando que los usuarios comprendan cada pilar antes de pasar al siguiente, lo que maximiza la comprensión y el engagement. -->
+    <!-- Visualization & Content Choices: 1. Relación Horas-Calificación -> Goal: Relationships -> Viz: Gráfico de Dispersión con Línea de Regresión -> Justification: Es la forma más directa y clara de mostrar una relación lineal y el modelo que la describe. -> Library: Chart.js. 2. Composición del Error del Modelo -> Goal: Inform -> Viz: Gráfico de Donut -> Justification: Ilustra cómo los errores (grandes vs. pequeños) contribuyen al costo total, haciendo tangible el concepto del MSE. -> Library: Chart.js. 3. Proceso de Descenso del Gradiente -> Goal: Organize -> Viz: Diagrama de Flujo con HTML/CSS -> Justification: Descompone un algoritmo iterativo en pasos visuales y secuenciales sin usar SVG/Mermaid, cumpliendo las restricciones. -> Method: HTML/CSS (Flexbox). 4. Relevancia por Industria -> Goal: Compare -> Viz: Gráfico de Barras Horizontales -> Justification: Permite una comparación rápida e intuitiva del impacto de la regresión lineal en diferentes sectores. -> Library: Chart.js. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f4f8; 
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .card {
+            background-color: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #007BFF, #00BFFF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .flow-step {
+            border: 2px solid #00BFFF;
+            color: #007BFF;
+        }
+        .flow-arrow {
+            font-size: 2.5rem;
+            color: #00BFFF;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto px-4 py-12 md:py-20">
+
+        <header class="text-center mb-20">
+            <h1 class="text-4xl md:text-6xl font-bold mb-4">El <span class="gradient-text">Corazón del Machine Learning</span></h1>
+            <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">Una inmersión visual para desentrañar cómo las máquinas aprenden a predecir el futuro a través de la Regresión Lineal y la Función de Costo.</p>
+        </header>
+
+        <section id="regresion" class="mb-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold">1. Prediciendo con Líneas Rectas</h2>
+                <p class="mt-4 text-gray-600 max-w-2xl mx-auto">La regresión lineal es una técnica que busca encontrar la mejor línea recta para resumir la relación entre dos variables. Imagina que queremos predecir la calificación de un examen basándonos en las horas de estudio. La regresión nos ayuda a trazar esa "línea de tendencia".</p>
+            </div>
+            <div class="card">
+                <h3 class="text-center font-semibold text-xl mb-4">Relación: Horas de Estudio vs. Calificación</h3>
+                <div class="chart-container">
+                    <canvas id="regresionChart"></canvas>
+                </div>
+                <div class="mt-8 p-4 bg-blue-50 rounded-lg text-center">
+                    <p class="font-mono text-lg font-bold text-blue-800">Y = b₀ + b₁X</p>
+                    <p class="text-gray-600 mt-2"><span class="font-bold">Y</span>: Calificación (lo que predecimos) | <span class="font-bold">X</span>: Horas de Estudio (el predictor) | <span class="font-bold">b₁</span>: La pendiente (cuánto mejora la nota por hora extra) | <span class="font-bold">b₀</span>: El intercepto (punto de partida).</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="costo" class="mb-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold">2. Midiendo el Error: La Función de Costo</h2>
+                <p class="mt-4 text-gray-600 max-w-2xl mx-auto">¿Cómo sabe el modelo si su línea es "buena"? La función de costo actúa como un evaluador, midiendo qué tan lejos están las predicciones de los valores reales. El objetivo es que este "costo" o "error" sea lo más bajo posible.</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="card text-center">
+                    <h3 class="font-semibold text-xl mb-4">Composición del Error (MSE)</h3>
+                     <p class="text-sm text-gray-500 mb-4">El Error Cuadrático Medio (MSE) penaliza más los errores grandes, obligando al modelo a corregirlos con mayor urgencia.</p>
+                    <div class="chart-container h-64 md:h-80 max-h-[350px]">
+                        <canvas id="costoChart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 class="text-xl font-semibold text-center mb-6">MSE vs. MAE: Dos Formas de Medir</h3>
+                    <div class="space-y-4">
+                        <div class="p-4 rounded-lg bg-blue-50 border-l-4 border-blue-500">
+                            <h4 class="font-bold">Error Cuadrático Medio (MSE)</h4>
+                            <p class="text-gray-600">Calcula el promedio de los errores al cuadrado. Es muy sensible a los valores atípicos (outliers).</p>
+                        </div>
+                        <div class="p-4 rounded-lg bg-teal-50 border-l-4 border-teal-500">
+                            <h4 class="font-bold">Error Absoluto Medio (MAE)</h4>
+                            <p class="text-gray-600">Calcula el promedio del valor absoluto de los errores. Es más robusto frente a outliers.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="optimizacion" class="mb-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold">3. El Aprendizaje: Minimizando el Costo</h2>
+                <p class="mt-4 text-gray-600 max-w-2xl mx-auto">El Descenso del Gradiente es el algoritmo que ajusta la línea iterativamente para encontrar el mínimo error. Es como bajar una montaña a ciegas, dando pequeños pasos en la dirección de la pendiente más pronunciada hasta llegar al valle (el costo mínimo).</p>
+            </div>
+            <div class="card">
+                <h3 class="text-xl font-semibold text-center mb-8">El Proceso del Descenso del Gradiente</h3>
+                <div class="flex flex-col md:flex-row items-center justify-around space-y-6 md:space-y-0 md:space-x-6">
+                    <div class="text-center">
+                        <div class="flow-step w-32 h-32 rounded-full flex items-center justify-center p-4"><span>1. Inicializar Parámetros</span></div>
+                    </div>
+                    <div class="flow-arrow transform md:-translate-y-4 rotate-90 md:rotate-0">➔</div>
+                    <div class="text-center">
+                        <div class="flow-step w-32 h-32 rounded-full flex items-center justify-center p-4"><span>2. Calcular Gradiente</span></div>
+                    </div>
+                    <div class="flow-arrow transform md:translate-y-4 rotate-90 md:rotate-0">➔</div>
+                     <div class="text-center">
+                        <div class="flow-step w-32 h-32 rounded-full flex items-center justify-center p-4"><span>3. Actualizar Parámetros</span></div>
+                    </div>
+                     <div class="flow-arrow transform md:-translate-y-4 rotate-90 md:rotate-0">➔</div>
+                    <div class="text-center">
+                        <div class="bg-green-100 border-2 border-green-500 text-green-700 w-32 h-32 rounded-full flex items-center justify-center p-4"><span>4. Repetir hasta Converger</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="aplicaciones" class="mb-12">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold">4. De la Teoría a la Práctica</h2>
+                <p class="mt-4 text-gray-600 max-w-2xl mx-auto">A pesar de su simplicidad, la regresión lineal es una herramienta poderosa y versátil, utilizada como base en innumerables aplicaciones de IA y análisis de datos en diversas industrias.</p>
+            </div>
+            <div class="card">
+                <h3 class="text-xl font-semibold text-center mb-4">Índice de Aplicabilidad de la Regresión Lineal por Sector</h3>
+                 <div class="chart-container">
+                    <canvas id="aplicacionesChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <footer class="text-center py-8 bg-gray-800 text-white">
+        <p>Infografía generada a partir del informe "Desentrañando la Regresión Lineal y la Función de Costo".</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tooltipConfig = {
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                if (Array.isArray(label)) {
+                                    return label.join(' ');
+                                } else {
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            const wrapLabel = (label) => {
+                const maxLen = 16;
+                if (label.length <= maxLen) return label;
+                const words = label.split(' ');
+                const lines = [];
+                let currentLine = '';
+                for (const word of words) {
+                    if ((currentLine + ' ' + word).length > maxLen && currentLine.length > 0) {
+                        lines.push(currentLine);
+                        currentLine = word;
+                    } else {
+                        currentLine = currentLine ? currentLine + ' ' + word : word;
+                    }
+                }
+                lines.push(currentLine);
+                return lines;
+            };
+
+            const regresionCtx = document.getElementById('regresionChart').getContext('2d');
+            const dataPoints = [
+                {x: 1, y: 55}, {x: 2, y: 60}, {x: 3, y: 70}, 
+                {x: 4, y: 78}, {x: 5, y: 85}, {x: 6, y: 92}
+            ];
+            const regressionLine = [
+                {x: 1, y: 53.7}, {x: 6, y: 91.2}
+            ];
+            new Chart(regresionCtx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Datos Reales (Estudiante)',
+                        data: dataPoints,
+                        backgroundColor: '#007BFF',
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }, {
+                        label: 'Línea de Regresión',
+                        data: regressionLine,
+                        type: 'line',
+                        borderColor: '#00BFFF',
+                        borderWidth: 3,
+                        fill: false,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    ...tooltipConfig,
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Horas de Estudio' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Calificación Obtenida' }
+                        }
+                    }
+                }
+            });
+
+            const costoCtx = document.getElementById('costoChart').getContext('2d');
+            new Chart(costoCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Errores Pequeños al Cuadrado', 'Errores Grandes al Cuadrado'],
+                    datasets: [{
+                        data: [40, 60],
+                        backgroundColor: ['#00BFFF', '#007BFF'],
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    ...tooltipConfig
+                }
+            });
+
+            const aplicacionesCtx = document.getElementById('aplicacionesChart').getContext('2d');
+            const appLabels = ['Finanzas y Economía', 'Marketing y Ventas', 'Bienes Raíces', 'Ciencias de la Salud', 'Operaciones y Logística'];
+            new Chart(aplicacionesCtx, {
+                type: 'bar',
+                data: {
+                    labels: appLabels.map(wrapLabel),
+                    datasets: [{
+                        label: 'Índice de Aplicabilidad',
+                        data: [95, 90, 85, 75, 88],
+                        backgroundColor: ['#007BFF', '#17A2B8', '#00BFFF', '#40C8FF', '#6AD5FF'],
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    ...tooltipConfig,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>
